@@ -36,7 +36,7 @@ class AccountMove(models.Model):
                     
                 dte = factura.dte_documento()
                 xmls = etree.tostring(dte, xml_declaration=True, encoding="UTF-8").decode("utf-8")
-                logging.warn(xmls)
+                logging.warning(xmls)
                 xmls_base64 = base64.b64encode(xmls.encode("utf-8"))
                 
                 request_token = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v3/api/login/get_token"
@@ -51,7 +51,7 @@ class AccountMove(models.Model):
                     "Password": factura.company_id.clave_fel,
                 }
                 r = requests.post(request_token, json=data, headers=headers, verify=False)
-                logging.warn(r.text)
+                logging.warning(r.text)
                 token_json = r.json()
                 if "Token" in token_json:
                     token = token_json["Token"]
@@ -61,11 +61,11 @@ class AccountMove(models.Model):
                         "Authorization": token,
                     }
                     r = requests.post(request_certifica+'?NIT={}&USERNAME={}&TIPO=CERTIFICATE_DTE_XML_TOSIGN&FORMAT=XML%20PDF'.format(factura.company_id.vat.replace('-','').zfill(12), factura.company_id.usuario_fel.split('.')[2]), data=xmls.encode("utf-8"), headers=headers, verify=False)
-                    logging.warn(r.text)
+                    logging.warning(r.text)
                     certificacion_json = r.json()
                     if certificacion_json["Codigo"] == 1:
                         xml_resultado = base64.b64decode(certificacion_json['ResponseDATA1'])
-                        logging.warn(xml_resultado)
+                        logging.warning(xml_resultado)
                         dte_resultado = etree.XML(xml_resultado)
 
                         numero_autorizacion =  dte_resultado.xpath("//*[local-name() = 'NumeroAutorizacion']")[0]
@@ -98,7 +98,7 @@ class AccountMove(models.Model):
                     dte = factura.dte_anulacion()
                     
                     xmls = etree.tostring(dte, xml_declaration=True, encoding="UTF-8")
-                    logging.warn(xmls.decode('utf-8'))
+                    logging.warning(xmls.decode('utf-8'))
 
                     request_token = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v3/api/login/get_token"
                     request_certifica = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v3/api/FelRequestV2"
@@ -112,7 +112,7 @@ class AccountMove(models.Model):
                         "Password": factura.company_id.clave_fel,
                     }
                     r = requests.post(request_token, json=data, headers=headers, verify=False)
-                    logging.warn(r.text)
+                    logging.warning(r.text)
                     token_json = r.json()
 
                     if token_json["Token"]:
@@ -123,7 +123,7 @@ class AccountMove(models.Model):
                             "Authorization": token,
                         }
                         r = requests.post(request_certifica+'?NIT={}&USERNAME={}&TIPO=ANULAR_FEL_TOSIGN&FORMAT=XML'.format(factura.company_id.vat.replace('-','').zfill(12), factura.company_id.usuario_fel.split('.')[2]), data=xmls, headers=headers, verify=False)
-                        logging.warn(r.text)
+                        logging.warning(r.text)
                         certificacion_json = r.json()
 
                         if certificacion_json["Codigo"] != 1:
