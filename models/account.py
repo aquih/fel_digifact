@@ -80,11 +80,9 @@ class AccountMove(models.Model):
                         factura.certificador_fel = "digifact"
                     else:
                         factura.error_certificador(r.text)
-                        return False
 
                 else:
                     factura.error_certificador(r.text)
-                    return False
                     
         return True
 
