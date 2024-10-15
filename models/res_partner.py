@@ -10,6 +10,14 @@ import re
 class Partner(models.Model):
     _inherit = 'res.partner'
 
+    def obtener_nombre_facturacion_fel(self):
+        vat = self.vat
+        if self.nit_facturacion_fel:
+            vat = self.nit_facturacion_fel
+            
+        res = self._datos_sat(self.env.company, vat)
+        self.nombre_facturacion_fel = res['nombre']
+
     def _datos_sat(self, company, vat):
         if vat:
             request_token = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v3/api/login/get_token"
