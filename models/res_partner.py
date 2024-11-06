@@ -2,10 +2,8 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
-import base64
-from lxml import etree
+
 import requests
-import re
 
 class Partner(models.Model):
     _inherit = 'res.partner'
