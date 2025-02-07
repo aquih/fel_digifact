@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record model="ir.ui.view" id="view_partner_form_fel_digifact">
-        <field name="name">res.partner.form.fel_digifact</field>
+    <record model="ir.ui.view" id="view_partner_form">
+        <field name="name">res.partner.form.inherit.fel_digifact</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">

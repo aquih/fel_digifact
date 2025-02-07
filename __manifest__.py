@@ -2,17 +2,18 @@
 
 {
     'name': 'FEL Digifact',
-    'version': '1.0',
+    'version': '1.2',
     'category': 'Custom',
     'description': """ Integración con factura electrónica de Digifact """,
     'author': 'aquíH',
-    'website': 'http://aquih.com/',
+    'website': 'http://www.aquih.com/',
     'depends': ['fel_gt'],
     'data': [
-        'views/account_view.xml',
-        'views/res_partner_view.xml',
+        'views/account_views.xml',
+        'views/res_partner_views.xml',
     ],
     'demo': [],
-    'installable': True
+    'installable': True,
+    'license': 'Other OSI approved licence',
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
