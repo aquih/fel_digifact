@@ -2,7 +2,7 @@
 
 {
     'name': 'FEL Digifact',
-    'version': '1.3',
+    'version': '1.4',
     'category': 'Custom',
     'description': """ Integración con factura electrónica de Digifact """,
     'author': 'aquíH',

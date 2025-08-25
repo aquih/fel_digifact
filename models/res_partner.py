@@ -16,13 +16,9 @@ class Partner(models.Model):
         res = self.obtener_datos_facturacion_fel(self.env.company, vat)
         self.nombre_facturacion_fel = res['nombre']
 
-    def obtener_datos_facturacion_fel(self):
-        vat = self.vat
-        if self.nit_facturacion_fel:
-            vat = self.nit_facturacion_fel
-            
+    def obtener_datos_facturacion_fel(self, company, vat):
         res = self._datos_sat(self.env.company, vat)
-        self.nombre_facturacion_fel = res['nombre']
+        return res
 
     def _datos_sat(self, company, vat):
         if vat:
