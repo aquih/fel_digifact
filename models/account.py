@@ -61,8 +61,10 @@ class AccountMove(models.Model):
                         "Authorization": token,
                     }
                     r = requests.post(request_certifica+'?NIT={}&USERNAME={}&TIPO=CERTIFICATE_DTE_XML_TOSIGN&FORMAT=XML%20PDF'.format(factura.company_id.vat.replace('-','').zfill(12), factura.company_id.usuario_fel.split('.')[2]), data=xmls.encode("utf-8"), headers=headers, verify=False)
-                    logging.warning(r.text)
-                    certificacion_json = r.json()
+                    try:
+                        certificacion_json = r.json()
+                    except Exception as e:
+                        logging.warning(r.text)
                     if certificacion_json["Codigo"] == 1:
                         xml_resultado = base64.b64decode(certificacion_json['ResponseDATA1'])
                         logging.warning(xml_resultado)
