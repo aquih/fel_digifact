@@ -1,4 +1,4 @@
-    # -*- encoding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
@@ -12,7 +12,7 @@ class Partner(models.Model):
         vat = self.vat
         if self.nit_facturacion_fel:
             vat = self.nit_facturacion_fel
-            
+
         res = self.obtener_datos_facturacion_fel(self.env.company, vat)
         self.nombre_facturacion_fel = res['nombre']
 
@@ -34,7 +34,7 @@ class Partner(models.Model):
                 "Username": company.usuario_fel,
                 "Password": company.clave_fel,
             }
-            r = requests.post(request_token, json=data, headers=headers, verify=False)
+            r = requests.post(request_token, json=data, headers=headers)
             token_json = r.json()
             if "Token" in token_json:
                 token = token_json["Token"]
@@ -42,7 +42,7 @@ class Partner(models.Model):
                     "Content-Type": "applcation/json",
                     "Authorization": token,
                 }
-                r = requests.get(request_tax_info+'?NIT={}&DATA1=SHARED_GETINFONITcom&DATA2=NIT|{}&COUNTRY=GT&USERNAME={}'.format(company.vat.replace('-','').zfill(12), vat, company.usuario_fel), headers= headers_nuevos)
+                r = requests.get(request_tax_info+'?NIT={}&DATA1=SHARED_GETINFONITcom&DATA2=NIT|{}&COUNTRY=GT&USERNAME={}'.format(company.vat.replace('-','').zfill(12), vat, company.usuario_fel), headers=headers_nuevos)
                 certificacion_json = r.json()
                 if "RESPONSE" in certificacion_json and len(certificacion_json["RESPONSE"]) > 0:
                     if "NOMBRE" in certificacion_json["RESPONSE"][0]:

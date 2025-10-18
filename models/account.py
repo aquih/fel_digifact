@@ -11,6 +11,7 @@ import requests
 #from import XMLSigner
 
 import logging
+_logger = logging.getLogger(__name__)
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -36,7 +37,7 @@ class AccountMove(models.Model):
                     
                 dte = factura.dte_documento()
                 xmls = etree.tostring(dte, xml_declaration=True, encoding="UTF-8").decode("utf-8")
-                logging.warning(xmls)
+                _logger.info(xmls)
                 xmls_base64 = base64.b64encode(xmls.encode("utf-8"))
                 
                 request_token = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v3/api/login/get_token"
@@ -50,8 +51,8 @@ class AccountMove(models.Model):
                     "Username": factura.company_id.usuario_fel,
                     "Password": factura.company_id.clave_fel,
                 }
-                r = requests.post(request_token, json=data, headers=headers, verify=False)
-                logging.warning(r.text)
+                r = requests.post(request_token, json=data, headers=headers)
+                _logger.info(r.text)
                 token_json = r.json()
                 if "Token" in token_json:
                     token = token_json["Token"]
@@ -60,14 +61,14 @@ class AccountMove(models.Model):
                         "Content-Type": "application/xml",
                         "Authorization": token,
                     }
-                    r = requests.post(request_certifica+'?NIT={}&USERNAME={}&TIPO=CERTIFICATE_DTE_XML_TOSIGN&FORMAT=XML%20PDF'.format(factura.company_id.vat.replace('-','').zfill(12), factura.company_id.usuario_fel.split('.')[2]), data=xmls.encode("utf-8"), headers=headers, verify=False)
+                    r = requests.post(request_certifica+'?NIT={}&USERNAME={}&TIPO=CERTIFICATE_DTE_XML_TOSIGN&FORMAT=XML%20PDF'.format(factura.company_id.vat.replace('-','').zfill(12), factura.company_id.usuario_fel.split('.')[2]), data=xmls.encode("utf-8"), headers=headers)
                     try:
                         certificacion_json = r.json()
                     except Exception as e:
-                        logging.warning(r.text)
+                        _logger.info(r.text)
                     if certificacion_json["Codigo"] == 1:
                         xml_resultado = base64.b64decode(certificacion_json['ResponseDATA1'])
-                        logging.warning(xml_resultado)
+                        _logger.info(xml_resultado)
                         dte_resultado = etree.XML(xml_resultado)
 
                         numero_autorizacion =  dte_resultado.xpath("//*[local-name() = 'NumeroAutorizacion']")[0]
@@ -98,7 +99,7 @@ class AccountMove(models.Model):
                     dte = factura.dte_anulacion()
                     
                     xmls = etree.tostring(dte, xml_declaration=True, encoding="UTF-8")
-                    logging.warning(xmls.decode('utf-8'))
+                    _logger.info(xmls.decode('utf-8'))
 
                     request_token = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v3/api/login/get_token"
                     request_certifica = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v3/api/FelRequestV2"
@@ -111,8 +112,8 @@ class AccountMove(models.Model):
                         "Username": factura.company_id.usuario_fel,
                         "Password": factura.company_id.clave_fel,
                     }
-                    r = requests.post(request_token, json=data, headers=headers, verify=False)
-                    logging.warning(r.text)
+                    r = requests.post(request_token, json=data, headers=headers)
+                    _logger.info(r.text)
                     token_json = r.json()
 
                     if token_json["Token"]:
@@ -122,8 +123,8 @@ class AccountMove(models.Model):
                             "Content-Type": "application/xml",
                             "Authorization": token,
                         }
-                        r = requests.post(request_certifica+'?NIT={}&USERNAME={}&TIPO=ANULAR_FEL_TOSIGN&FORMAT=XML'.format(factura.company_id.vat.replace('-','').zfill(12), factura.company_id.usuario_fel.split('.')[2]), data=xmls, headers=headers, verify=False)
-                        logging.warning(r.text)
+                        r = requests.post(request_certifica+'?NIT={}&USERNAME={}&TIPO=ANULAR_FEL_TOSIGN&FORMAT=XML'.format(factura.company_id.vat.replace('-','').zfill(12), factura.company_id.usuario_fel.split('.')[2]), data=xmls, headers=headers)
+                        _logger.info(r.text)
                         certificacion_json = r.json()
 
                         if certificacion_json["Codigo"] != 1:
