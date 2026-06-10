@@ -13,15 +13,15 @@ class Partner(models.Model):
         if self.nit_facturacion_fel:
             vat = self.nit_facturacion_fel
 
-        res = self.obtener_datos_facturacion_fel(self.env.company, vat)
+        res = self.obtener_datos_facturacion_fel(vat)
         self.nombre_facturacion_fel = res['nombre']
 
-    def obtener_datos_facturacion_fel(self, company, vat):
+    def obtener_datos_facturacion_fel(self, vat):
         res = self._datos_sat(self.env.company, vat)
         return res
 
-    def _datos_sat(self, company, vat):
-        if vat:
+    def _datos_sat(self, company, nit):
+        if nit:
             request_token = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v3/api/login/get_token"
             request_tax_info = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v3/api/SHAREDINFO"
             if company.pruebas_fel:
@@ -42,14 +42,16 @@ class Partner(models.Model):
                     "Content-Type": "applcation/json",
                     "Authorization": token,
                 }
-                r = requests.get(request_tax_info+'?NIT={}&DATA1=SHARED_GETINFONITcom&DATA2=NIT|{}&COUNTRY=GT&USERNAME={}'.format(company.vat.replace('-','').zfill(12), vat, company.usuario_fel), headers=headers_nuevos)
+                r = requests.get(request_tax_info+'?NIT={}&DATA1=SHARED_GETINFONITcom&DATA2=NIT|{}&COUNTRY=GT&USERNAME={}'.format(company.vat.replace('-','').zfill(12), nit, company.usuario_fel), headers=headers_nuevos)
                 certificacion_json = r.json()
+
+                datos_contribuyente = { 'nombre': '', 'nit': '', 'mensaje': '' }
+                
                 if "RESPONSE" in certificacion_json and len(certificacion_json["RESPONSE"]) > 0:
                     if "NOMBRE" in certificacion_json["RESPONSE"][0]:
-                        nombre = certificacion_json["RESPONSE"][0]["NOMBRE"]
-                        nit = certificacion_json["RESPONSE"][0]["NIT"]
-                        return {'nombre': nombre, 'nit': nit}
-                    else:
-                        return {'nombre': '', 'nit': ''}
+                        datos_contribuyente['nombre'] = certificacion_json["RESPONSE"][0]["NOMBRE"]
+                        datos_contribuyente['nit'] = certificacion_json["RESPONSE"][0]["NIT"]
                 else:
-                    raise UserError(certificacion_json)
+                    datos_contribuyente['mensaje'] = r.text
+
+                return datos_contribuyente

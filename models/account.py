@@ -142,4 +142,3 @@ class ResCompany(models.Model):
     clave_fel = fields.Char('Clave FEL', copy=False)
     no_guardar_pdf_fel = fields.Boolean('No Guardar el PDF de FEL')
     pruebas_fel = fields.Boolean('Modo de Pruebas FEL')
-    
