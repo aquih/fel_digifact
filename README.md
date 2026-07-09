@@ -1,6 +1,6 @@
 # fel_digifact
 
-Para referencia interna:
+Para referencia interna se puede poner lo siguiente en el adenda:
 
 ```python
 from odoo import fields
